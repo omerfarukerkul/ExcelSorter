@@ -1,30 +1,31 @@
 import java.util.Objects;
 
 public class ExcelModel {
-    private Integer c0;
-    private String c1;
-    private String c2;
-    private String c3;
-    private Double c4;
-    private Integer c5;
-    private String c6;
-    private String c7;
-    private String c8;
-    private String c9;
-    private String c10;
-    private String c11;
-    private Integer c12;
-    private String c13;
-    private Integer c14;
-    private String c15;
-    private Double c16;
-    private String c17;
-    private String c18;
-    private String c19;
-    private Double c20;
-    private String c21;
-    private String c22;
-    private Integer c23;
+
+    private Integer c0 = 0;
+    private String c1 = "";
+    private String c2 = "";
+    private String c3 = "";
+    private Double c4 = 0d;
+    private Integer c5 = 0;
+    private String c6 = "";
+    private String c7 = "";
+    private String c8 = "";
+    private String c9 = "";
+    private String c10 = "";
+    private String c11 = "";
+    private Integer c12 = 0;
+    private String c13 = "";
+    private Integer c14 = 0;
+    private String c15 = "";
+    private Double c16 = 0d;
+    private String c17 = "";
+    private String c18 = "";
+    private String c19 = "";
+    private Double c20 = 0d;
+    private String c21 = "";
+    private String c22 = "";
+    private Integer c23 = 0;
 
     public ExcelModel() {
     }

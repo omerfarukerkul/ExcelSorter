@@ -1,9 +1,12 @@
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -79,46 +82,49 @@ public final class Util {
         return excelModelList;
     }
 
-    public static void excelWriter(String excelName, List<ExcelModel> excelModelList) {
-        try (Workbook workbook = new HSSFWorkbook()) {
+    public static Path excelWriter(Path outputPath, String extension, List<ExcelModel> excelModelList) {
+        final Path p = Paths.get(outputPath + "\\latest."+extension);
+
+        try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Sayfa1");
             CellStyle cellStyle = workbook.createCellStyle();
             CreationHelper createHelper = workbook.getCreationHelper();
             cellStyle.setDataFormat(createHelper.createDataFormat().getFormat("m\\/d\\/yyyy"));
             Row rh = sheet.createRow(0);
 
-            for (int i = 0; i < 24; i++) {
-                rh.createCell(i).setCellValue(headerString.get(i));
-            }
+            if (headerString.size() != 0)
+                for (int i = 0; i < 24; i++) {
+                    rh.createCell(i).setCellValue(headerString.get(i));
+                }
 
             int rowNum = 1;
-            for (int j = 0; j < excelModelList.size(); j++) {
+            for (ExcelModel anExcelModelList : excelModelList) {
                 Row row = sheet.createRow(rowNum++);
 
-                row.createCell(0).setCellValue(excelModelList.get(j).getC0());
-                row.createCell(1).setCellValue(excelModelList.get(j).getC1());
-                row.createCell(2).setCellValue(excelModelList.get(j).getC2());
-                row.createCell(3).setCellValue(excelModelList.get(j).getC3());
-                row.createCell(4).setCellValue(excelModelList.get(j).getC4());
-                row.createCell(5).setCellValue(excelModelList.get(j).getC5());
-                row.createCell(6).setCellValue(excelModelList.get(j).getC6());
-                row.createCell(7).setCellValue(dateConverter(excelModelList.get(j).getC7()));
-                row.createCell(8).setCellValue(dateConverter(excelModelList.get(j).getC8()));
-                row.createCell(9).setCellValue(excelModelList.get(j).getC9());
-                row.createCell(10).setCellValue(excelModelList.get(j).getC10());
-                row.createCell(11).setCellValue(excelModelList.get(j).getC11());
-                row.createCell(12).setCellValue(excelModelList.get(j).getC12());
-                row.createCell(13).setCellValue(excelModelList.get(j).getC13());
-                row.createCell(14).setCellValue(excelModelList.get(j).getC14());
-                row.createCell(15).setCellValue(excelModelList.get(j).getC15());
-                row.createCell(16).setCellValue(excelModelList.get(j).getC16());
-                row.createCell(17).setCellValue(excelModelList.get(j).getC17());
-                row.createCell(18).setCellValue(excelModelList.get(j).getC18());
-                row.createCell(19).setCellValue(excelModelList.get(j).getC19());
-                row.createCell(20).setCellValue(excelModelList.get(j).getC20());
-                row.createCell(21).setCellValue(excelModelList.get(j).getC21());
-                row.createCell(22).setCellValue(excelModelList.get(j).getC22());
-                row.createCell(23).setCellValue(excelModelList.get(j).getC23());
+                row.createCell(0).setCellValue(anExcelModelList.getC0());
+                row.createCell(1).setCellValue(anExcelModelList.getC1());
+                row.createCell(2).setCellValue(anExcelModelList.getC2());
+                row.createCell(3).setCellValue(anExcelModelList.getC3());
+                row.createCell(4).setCellValue(anExcelModelList.getC4());
+                row.createCell(5).setCellValue(anExcelModelList.getC5());
+                row.createCell(6).setCellValue(anExcelModelList.getC6());
+                row.createCell(7).setCellValue(dateConverter(anExcelModelList.getC7()));
+                row.createCell(8).setCellValue(dateConverter(anExcelModelList.getC8()));
+                row.createCell(9).setCellValue(anExcelModelList.getC9());
+                row.createCell(10).setCellValue(anExcelModelList.getC10());
+                row.createCell(11).setCellValue(anExcelModelList.getC11());
+                row.createCell(12).setCellValue(anExcelModelList.getC12());
+                row.createCell(13).setCellValue(anExcelModelList.getC13());
+                row.createCell(14).setCellValue(anExcelModelList.getC14());
+                row.createCell(15).setCellValue(anExcelModelList.getC15());
+                row.createCell(16).setCellValue(anExcelModelList.getC16());
+                row.createCell(17).setCellValue(anExcelModelList.getC17());
+                row.createCell(18).setCellValue(anExcelModelList.getC18());
+                row.createCell(19).setCellValue(anExcelModelList.getC19());
+                row.createCell(20).setCellValue(anExcelModelList.getC20());
+                row.createCell(21).setCellValue(anExcelModelList.getC21());
+                row.createCell(22).setCellValue(anExcelModelList.getC22());
+                row.createCell(23).setCellValue(anExcelModelList.getC23());
                 row.getCell(7).setCellStyle(cellStyle);
                 row.getCell(8).setCellStyle(cellStyle);
 
@@ -126,7 +132,7 @@ public final class Util {
             for (int i = 0; i < 24; i++) {
                 sheet.autoSizeColumn(i);
             }
-            try (FileOutputStream fo = new FileOutputStream(excelName + "_sorted.xls")) {
+            try (FileOutputStream fo = new FileOutputStream(p.toString())) {
                 workbook.write(fo);
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
@@ -134,7 +140,10 @@ public final class Util {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
+        return p;
     }
+
+
 
     public static Date dateConverter(String s) {
         try {
@@ -143,6 +152,18 @@ public final class Util {
             System.out.println(parse.getMessage());
             return new Date();
         }
+    }
+
+    public static Path newName(Path oldName, String newNameString) throws IOException {
+        return Files.move(oldName, oldName.resolveSibling(newNameString));
+    }
+
+    public static String dateToFileName(String fileType) {
+        final Calendar calendar = Calendar.getInstance();
+        final String pattern = "dd-MM-yyyy hh.mm.ss.SSS";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        simpleDateFormat.setTimeZone(calendar.getTimeZone());
+        return "latest_" + simpleDateFormat.format(calendar.getTime()) + "." + fileType;
     }
 
 }

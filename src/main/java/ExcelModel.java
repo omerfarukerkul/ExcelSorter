@@ -1,8 +1,7 @@
 import java.util.Objects;
-
 public class ExcelModel {
 
-    private Integer c0 = 0;
+    private String c0 = "";
     private String c1 = "";
     private String c2 = "";
     private String c3 = "";
@@ -26,15 +25,16 @@ public class ExcelModel {
     private String c21 = "";
     private String c22 = "";
     private Integer c23 = 0;
+    private double c223;
 
     public ExcelModel() {
     }
 
-    public Integer getC0() {
+    public String getC0() {
         return c0;
     }
 
-    public void setC0(Integer c0) {
+    public void setC0(String c0) {
         this.c0 = c0;
     }
 
@@ -287,4 +287,5 @@ public class ExcelModel {
                 ", c23=" + c23 +
                 '}';
     }
+
 }

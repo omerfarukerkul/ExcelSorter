@@ -1,5 +1,7 @@
+
+import com.setek.ExcelModel;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -13,9 +15,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
 public final class Util {
 
     private static SimpleDateFormat dateToString = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.US);
+    private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("mm/dd/yyyy");
     private static List<String> headerString = new ArrayList<>();
 
     public static List<ExcelModel> excelSorter(List<ExcelModel> excelModel) {
@@ -28,64 +33,88 @@ public final class Util {
         return excelModelStream.collect(Collectors.toList());
     }
 
-    public static List<ExcelModel> excelGetter(File excelFile) {
+    public static List<ExcelModel> getExcelData(Sheet sheet) throws ParseException {
+        int totalRows = sheet.getLastRowNum();
+        int totalColumns = sheet.getRow(0).getLastCellNum();
+
+        final DataFormatter dataFormatter = new DataFormatter();
+        final Row headerRow = sheet.getRow(0);
         List<ExcelModel> excelModelList = new ArrayList<>();
-        try (Workbook wb = WorkbookFactory.create(excelFile)) {
-            Sheet sheet = wb.getSheetAt(0);
 
-            for (int i = 0; i < sheet.getLastRowNum(); i++) {
-                Row r = sheet.getRow(i);
-                ExcelModel excelModel = new ExcelModel();
-                if (i == 0) {
-                    for (int j = 0; j < 24; j++) {
-                        if (!r.getCell(j).getCellType().equals(CellType.BLANK))
-                            headerString.add(r.getCell(j).getStringCellValue());
-                    }
-                } else {
-                    Cell c0 = r.getCell(1);
-                    Cell c1 = r.getCell(4);
-                    Cell c2 = r.getCell(20);
-
-                    if (c0 != null && c1 != null && c2 != null && !c0.getCellType().equals(CellType.BLANK)) {
-                        excelModel.setC0((int) r.getCell(0).getNumericCellValue());
-                        excelModel.setC1(c0.getStringCellValue());
-                        excelModel.setC2(r.getCell(2).getStringCellValue());
-                        excelModel.setC3(r.getCell(3).getStringCellValue());
-                        excelModel.setC4(c1.getNumericCellValue());
-                        excelModel.setC5((int) r.getCell(5).getNumericCellValue());
-                        excelModel.setC6(r.getCell(6).getStringCellValue());
-                        excelModel.setC7(String.valueOf(r.getCell(7).getDateCellValue()));
-                        excelModel.setC8(String.valueOf(r.getCell(8).getDateCellValue()));
-                        excelModel.setC9(r.getCell(9).getStringCellValue());
-                        excelModel.setC10(r.getCell(10).getStringCellValue());
-                        excelModel.setC11(r.getCell(11).getStringCellValue());
-                        excelModel.setC12((int) r.getCell(12).getNumericCellValue());
-                        excelModel.setC13(r.getCell(13).getStringCellValue());
-                        excelModel.setC14((int) r.getCell(14).getNumericCellValue());
-                        excelModel.setC15(r.getCell(15).getStringCellValue());
-                        excelModel.setC16(r.getCell(16).getNumericCellValue());
-                        excelModel.setC17(r.getCell(17).getStringCellValue());
-                        excelModel.setC18(r.getCell(18).getStringCellValue());
-                        excelModel.setC19(r.getCell(19).getStringCellValue());
-                        excelModel.setC20(c2.getNumericCellValue());
-                        excelModel.setC21(r.getCell(21).getStringCellValue());
-                        excelModel.setC22(r.getCell(22).getStringCellValue());
-                        excelModel.setC23((int) r.getCell(23).getNumericCellValue());
-
-                        excelModelList.add(excelModel);
-                    }
+        for (int i = 0; i < totalColumns; i++) {
+            String headerValue = dataFormatter.formatCellValue(headerRow.getCell(i));
+            if (headerValue.equals("")) {
+                continue;
+            }
+            headerString.add(headerValue);
+        }
+        outer:
+        for (int i = 1; i < totalRows; i++) {
+            ExcelModel excelModel = new ExcelModel();
+            Row row = sheet.getRow(i);
+            for (int j = 0; j < totalColumns; j++) {
+                String fieldValue = dataFormatter.formatCellValue(row.getCell(j));
+                if (fieldValue.equals("")) {
+                    continue outer;
+                }
+                switch (j) {
+                    case 0: excelModel.setC0(fieldValue);break;
+                    case 1: excelModel.setC1(fieldValue);break;
+                    case 2: excelModel.setC2(fieldValue);break;
+                    case 3: excelModel.setC3(fieldValue);break;
+                    case 4: excelModel.setC4(Double.parseDouble(fieldValue));break;
+                    case 5: excelModel.setC5(Integer.parseInt(fieldValue));break;
+                    case 6: excelModel.setC6(fieldValue);break;
+                    case 7:{
+                        final Date date = simpleDateFormat.parse(fieldValue);
+                        excelModel.setC7(simpleDateFormat.format(date));
+                    break;}
+                    case 8: {
+                        final Date date = simpleDateFormat.parse(fieldValue);
+                        excelModel.setC8(simpleDateFormat.format(date));break;}
+                    case 9: excelModel.setC9(fieldValue);break;
+                    case 10: excelModel.setC10(fieldValue);break;
+                    case 11: excelModel.setC11(fieldValue);break;
+                    case 12: excelModel.setC12(Integer.parseInt(fieldValue));break;
+                    case 13: excelModel.setC13(fieldValue);break;
+                    case 14: excelModel.setC14(Integer.parseInt(fieldValue));break;
+                    case 15: excelModel.setC15(fieldValue);break;
+                    case 16: excelModel.setC16(Double.parseDouble(fieldValue));break;
+                    case 17: excelModel.setC17(fieldValue);break;
+                    case 18: excelModel.setC18(fieldValue);break;
+                    case 19: excelModel.setC19(fieldValue);break;
+                    case 20: excelModel.setC20(Double.parseDouble(fieldValue));break;
+                    case 21: excelModel.setC21(fieldValue);break;
+                    case 22: excelModel.setC22(fieldValue);break;
+                    case 23: excelModel.setC23(Integer.parseInt(fieldValue));break;
+                    default:
+                        break;
                 }
             }
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
+            excelModelList.add(excelModel);
         }
         return excelModelList;
     }
 
-    public static Path excelWriter(Path outputPath, String extension, List<ExcelModel> excelModelList) {
-        final Path p = Paths.get(outputPath + "\\latest."+extension);
+    public static List<ExcelModel> excelGetter(File excelFile) {
+        try (Workbook wb = WorkbookFactory.create(excelFile)) {
+            Sheet sheet = wb.getSheetAt(0);
 
-        try (Workbook workbook = new XSSFWorkbook()) {
+            return getExcelData(sheet);
+
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            return new ArrayList<>();
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public static Path excelWriter(Path outputPath, String extension, List<ExcelModel> excelModelList) {
+        final Path p = Paths.get(outputPath + "\\latest." + extension);
+
+        try (Workbook workbook = new HSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Sayfa1");
             CellStyle cellStyle = workbook.createCellStyle();
             CreationHelper createHelper = workbook.getCreationHelper();
@@ -108,8 +137,8 @@ public final class Util {
                 row.createCell(4).setCellValue(anExcelModelList.getC4());
                 row.createCell(5).setCellValue(anExcelModelList.getC5());
                 row.createCell(6).setCellValue(anExcelModelList.getC6());
-                row.createCell(7).setCellValue(dateConverter(anExcelModelList.getC7()));
-                row.createCell(8).setCellValue(dateConverter(anExcelModelList.getC8()));
+                row.createCell(7).setCellValue(anExcelModelList.getC7());
+                row.createCell(8).setCellValue(anExcelModelList.getC8());
                 row.createCell(9).setCellValue(anExcelModelList.getC9());
                 row.createCell(10).setCellValue(anExcelModelList.getC10());
                 row.createCell(11).setCellValue(anExcelModelList.getC11());
@@ -143,7 +172,10 @@ public final class Util {
         return p;
     }
 
-
+    public static void excelMover(Path oldExcelDir, Path latestSortedExcel) throws IOException {
+        final Path latestWillBeMoved = Util.newName(latestSortedExcel, Util.dateToFileName((latestSortedExcel.getFileName().toString().equals("latest.xls")) ? "xls" : "xlsx"));
+        Files.move(latestWillBeMoved, oldExcelDir.resolve(latestWillBeMoved.getFileName()), REPLACE_EXISTING);
+    }
 
     public static Date dateConverter(String s) {
         try {

@@ -25,7 +25,6 @@ public class ExcelModel {
     private String c21 = "";
     private String c22 = "";
     private Integer c23 = 0;
-    private double c223;
 
     public ExcelModel() {
     }

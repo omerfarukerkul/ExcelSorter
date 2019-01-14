@@ -8,8 +8,8 @@ public class ExcelModel {
     private Double c4 = 0d;
     private Integer c5 = 0;
     private String c6 = "";
-    private String c7 = "";
-    private String c8 = "";
+    private String c7 = "1/1/1970";
+    private String c8 = "1/1/1970";
     private String c9 = "";
     private String c10 = "";
     private String c11 = "";

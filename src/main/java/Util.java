@@ -1,5 +1,3 @@
-
-import com.setek.ExcelModel;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 
@@ -20,7 +18,8 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 public final class Util {
 
     private static SimpleDateFormat dateToString = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.US);
-    private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("mm/dd/yyyy");
+    private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("M/dd/yyyy");
+    private static SimpleDateFormat simpleDateFormat2 = new SimpleDateFormat("d.M.yyyy");
     private static List<String> headerString = new ArrayList<>();
 
     public static List<ExcelModel> excelSorter(List<ExcelModel> excelModel) {
@@ -67,11 +66,13 @@ public final class Util {
                     case 6: excelModel.setC6(fieldValue);break;
                     case 7:{
                         final Date date = simpleDateFormat.parse(fieldValue);
-                        excelModel.setC7(simpleDateFormat.format(date));
+                        final String excelDate = simpleDateFormat2.format(date);
+                        excelModel.setC7(excelDate);
                     break;}
                     case 8: {
                         final Date date = simpleDateFormat.parse(fieldValue);
-                        excelModel.setC8(simpleDateFormat.format(date));break;}
+                        final String excelDate = simpleDateFormat2.format(date);
+                        excelModel.setC8(excelDate);break;}
                     case 9: excelModel.setC9(fieldValue);break;
                     case 10: excelModel.setC10(fieldValue);break;
                     case 11: excelModel.setC11(fieldValue);break;
@@ -115,10 +116,9 @@ public final class Util {
         final Path p = Paths.get(outputPath + "\\latest." + extension);
 
         try (Workbook workbook = new HSSFWorkbook()) {
-            Sheet sheet = workbook.createSheet("Sayfa1");
-            CellStyle cellStyle = workbook.createCellStyle();
-            CreationHelper createHelper = workbook.getCreationHelper();
-            cellStyle.setDataFormat(createHelper.createDataFormat().getFormat("m\\/d\\/yyyy"));
+            final Sheet sheet = workbook.createSheet("Sayfa1");
+            final CellStyle cellStyle = workbook.createCellStyle();
+            cellStyle.setDataFormat((short)14);
             Row rh = sheet.createRow(0);
 
             if (headerString.size() != 0)
